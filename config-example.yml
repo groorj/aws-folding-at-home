@@ -1,0 +1,16 @@
+# your AWS profile name
+aws_profile_name: "groorj-fah"
+# AWS region to use
+aws_region: "us-east-2"
+# AWS EC2 instance type to use
+aws_instance_type: "t2.micro"
+# AWS S3 bucket name that will store the Terraform state file
+aws_s3_bucket_name: "fah-mybucket-test"
+# Folding@Home username
+fah_user: "GustavoAguiar"
+# Folding@Home password
+fah_pass: ""
+# Folding@Home Team Id
+fah_team_id: 238681
+# Your IP address to whitelist Folding@Home web admin interface
+your_ip_address: "1.1.1.1"
