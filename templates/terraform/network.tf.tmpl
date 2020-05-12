@@ -1,0 +1,70 @@
+# Create a VPC
+resource "aws_vpc" "fah-vpc" {
+  cidr_block           = "10.215.0.0/16"
+  enable_dns_support   = true
+  enable_dns_hostnames = true
+
+  tags = {
+    Name = "Folding@Home VPC"
+    ResourceCreatedBy = "$var_aws_tag_fah"
+  }
+}
+
+# Create an Internet Gateway
+resource "aws_internet_gateway" "fah-igw" {
+  vpc_id = aws_vpc.fah-vpc.id
+
+  tags = {
+    Name = "Folding@Home IGW"
+  }
+}
+
+# Create subnets
+resource "aws_subnet" "public-subnet-1" {
+  vpc_id     = aws_vpc.fah-vpc.id
+  cidr_block = "10.215.0.0/20"
+  map_public_ip_on_launch = true
+  availability_zone = "$var_aws_region$var_aws_availability_zone_1"
+
+  tags = {
+    Name = "Public Subnet 1"
+    ResourceCreatedBy = "$var_aws_tag_fah"
+  }
+}
+resource "aws_subnet" "public-subnet-2" {
+  vpc_id     = aws_vpc.fah-vpc.id
+  cidr_block = "10.215.16.0/20"
+  map_public_ip_on_launch = true
+  availability_zone = "$var_aws_region$var_aws_availability_zone_2"
+
+  tags = {
+    Name = "Public Subnet 2"
+    ResourceCreatedBy = "$var_aws_tag_fah"
+  }
+}
+
+# Create the Route Tables
+resource "aws_route_table" "public" {
+  vpc_id = aws_vpc.fah-vpc.id
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.fah-igw.id
+  }
+
+  tags = {
+    Name = "Public Route Table"
+    ResourceCreatedBy = "$var_aws_tag_fah"
+  }
+}
+
+# Create Route Table Associations
+resource "aws_route_table_association" "public-subnet-association-1" {
+  subnet_id      = aws_subnet.public-subnet-1.id
+  route_table_id = aws_route_table.public.id
+}
+resource "aws_route_table_association" "public-subnet-association-2" {
+  subnet_id      = aws_subnet.public-subnet-2.id
+  route_table_id = aws_route_table.public.id
+}
+
+# End;
