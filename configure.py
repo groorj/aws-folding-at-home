@@ -41,6 +41,7 @@ if __name__ == "__main__":
     your_ip_address         = config["your_ip_address"]
     aws_tag_fah             = config["aws_tag_fah"]
     aws_ec2_instance_count  = config["aws_ec2_instance_count"]
+    save_stats_to_s3        = config["save_stats_to_s3"]
     
     print("AWS Profile Name: ", aws_instance_type)
     print("AWS Region: ", aws_region)
@@ -67,7 +68,14 @@ if __name__ == "__main__":
         'var_aws_ec2_instance_count':aws_ec2_instance_count,
         'var_aws_s3_bucket_region':aws_s3_bucket_region
         } 
-    
+
+    if(save_stats_to_s3):
+        _generate_file('templates/terraform/iam-ec2.tf.tmpl', 'terraform/iam-ec2.tf')
+        var_ec2_instance_profile = "iam_instance_profile        = aws_iam_instance_profile.fah_instance_profile.name"
+    else:
+        var_ec2_instance_profile = ""
+    d['var_ec2_instance_profile'] = var_ec2_instance_profile
+
     _generate_file('templates/user-data.tmpl', 'bin/user-data.sh')
     _generate_file('templates/terraform/provider.tf.tmpl', 'terraform/provider.tf')
     _generate_file('templates/terraform/network.tf.tmpl', 'terraform/network.tf')
