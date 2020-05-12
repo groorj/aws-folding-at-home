@@ -1,16 +1,23 @@
 # your AWS profile name
-aws_profile_name: "groorj-fah"
-# AWS region to use
+aws_profile_name: "groorj-folding-at-home"
+# AWS S3 bucket name that will store the Terraform state file
+aws_s3_bucket_name: "folding-at-home-test"
+aws_s3_bucket_region: "us-east-2"
+# AWS region and availability zones to use
 aws_region: "us-east-2"
+aws_availability_zone_1: "a"
+aws_availability_zone_2: "b"
 # AWS EC2 instance type to use
 aws_instance_type: "t2.micro"
-# AWS S3 bucket name that will store the Terraform state file
-aws_s3_bucket_name: "fah-mybucket-test"
+# Number of AWS EC2 instances to run
+aws_ec2_instance_count: 1
+# AWS Tag: ResourceCreatedBy
+aws_tag_fah: "Folding@Home"
 # Folding@Home username
 fah_user: "GustavoAguiar"
 # Folding@Home password
-fah_pass: ""
+fah_pass: "FoldingPassword"
 # Folding@Home Team Id
 fah_team_id: 238681
 # Your IP address to whitelist Folding@Home web admin interface
-your_ip_address: "1.1.1.1"
+your_ip_address: "A.B.C.D"
