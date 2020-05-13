@@ -19,5 +19,9 @@ fah_user: "GustavoAguiar"
 fah_pass: "FoldingPassword"
 # Folding@Home Team Id
 fah_team_id: 238681
+# Folding@Home WebAdmin Port (default: 7396 -- change it at your own risk)
+fah_webadmin_port: 7396
 # Your IP address to whitelist Folding@Home web admin interface
 your_ip_address: "A.B.C.D"
+# Enable stats -- save stats data to S3 bucket to be used by Athena
+enable_stats: true
