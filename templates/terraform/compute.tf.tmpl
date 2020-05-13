@@ -34,8 +34,8 @@ resource "aws_security_group" "fah-security-group" {
 resource "aws_security_group_rule" "fah-web-port" {
   type        = "ingress"
   protocol    = "tcp"
-  from_port   = 7396
-  to_port     = 7396
+  from_port   = $var_fah_webadmin_port
+  to_port     = $var_fah_webadmin_port
   cidr_blocks = ["$var_your_ip_address/32"]
   security_group_id = aws_security_group.fah-security-group.id
 }

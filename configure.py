@@ -37,11 +37,12 @@ if __name__ == "__main__":
     aws_s3_bucket_region    = config["aws_s3_bucket_region"]
     fah_pass                = config["fah_pass"]
     fah_team_id             = config["fah_team_id"]
+    fah_webadmin_port       = config["fah_webadmin_port"]
     fah_user                = config["fah_user"]
     your_ip_address         = config["your_ip_address"]
     aws_tag_fah             = config["aws_tag_fah"]
     aws_ec2_instance_count  = config["aws_ec2_instance_count"]
-    save_stats_to_s3        = config["save_stats_to_s3"]
+    enable_stats            = config["enable_stats"]
     
     print("AWS Profile Name: ", aws_instance_type)
     print("AWS Region: ", aws_region)
@@ -57,6 +58,7 @@ if __name__ == "__main__":
         'var_fah_user':fah_user, 
         'var_fah_pass':fah_pass,
         'var_fah_team_id':fah_team_id,
+        'var_fah_webadmin_port':fah_webadmin_port,
         'var_your_ip_address':your_ip_address,
         'var_aws_region':aws_region,
         'var_aws_availability_zone_1':aws_availability_zone_1,
@@ -66,10 +68,11 @@ if __name__ == "__main__":
         'var_aws_s3_bucket_name':aws_s3_bucket_name,
         'var_aws_tag_fah':aws_tag_fah,
         'var_aws_ec2_instance_count':aws_ec2_instance_count,
-        'var_aws_s3_bucket_region':aws_s3_bucket_region
+        'var_aws_s3_bucket_region':aws_s3_bucket_region,
+        'var_enable_stats':enable_stats
         } 
 
-    if(save_stats_to_s3):
+    if(enable_stats):
         _generate_file('templates/terraform/iam-ec2.tf.tmpl', 'terraform/iam-ec2.tf')
         var_ec2_instance_profile = "iam_instance_profile        = aws_iam_instance_profile.fah_instance_profile.name"
     else:

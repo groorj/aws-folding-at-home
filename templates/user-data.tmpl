@@ -2,9 +2,16 @@
 
 # https://stats.foldingathome.org/donor/$var_fah_user
 # https://stats.foldingathome.org/team/$var_fah_team_id
+# stats enabled: $var_enable_stats
 
 # variables
 LOCAL_IP_ADDRESS=`curl http://169.254.169.254/latest/meta-data/local-ipv4`
+PUBLIC_IP_ADDRESS=`curl http://169.254.169.254/latest/meta-data/public-ipv4`
+AWS_INSTANCE_ID=`curl http://169.254.169.254/latest/meta-data/instance-id`
+AWS_INSTANCE_AZ=`curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone`
+AWS_INSTANCE_REGION="`echo \"$${AWS_INSTANCE_AZ}\" | sed 's/[a-z]$$//'`"
+AWS_AMI_ID=`curl -s http://169.254.169.254/latest/meta-data/ami-id`
+STATS_ENABLED=$var_enable_stats
 
 # update
 yum update -y
@@ -40,5 +47,21 @@ EOF
 # start
 /etc/init.d/FAHClient stop
 /etc/init.d/FAHClient start
+
+# stats
+if [ "$$STATS_ENABLED" == "True" ]; then
+  JSON_FILE="$${AWS_INSTANCE_ID}.json"
+  echo "{" > /tmp/$$JSON_FILE
+  echo "  \"instance-id\": \"$${AWS_INSTANCE_ID}\"," >> /tmp/$$JSON_FILE
+  echo "  \"local-ip\": \"$${LOCAL_IP_ADDRESS}\"," >> /tmp/$$JSON_FILE
+  echo "  \"public-ip\": \"$${PUBLIC_IP_ADDRESS}\"," >> /tmp/$$JSON_FILE
+  echo "  \"region\": \"$${AWS_INSTANCE_REGION}\"" >> /tmp/$$JSON_FILE
+  echo "  \"az\": \"$${AWS_INSTANCE_AZ}\"" >> /tmp/$$JSON_FILE
+  echo "  \"ami-id\": \"$${AWS_AMI_ID}\"" >> /tmp/$$JSON_FILE
+  echo "  \"web-admin-url\": \"http://$${PUBLIC_IP_ADDRESS}:7396/\"" >> /tmp/$$JSON_FILE
+  echo "  \"status\": \"started\"" >> /tmp/$$JSON_FILE
+  echo "}" >> /tmp/$$JSON_FILE
+  aws s3 cp /tmp/$$JSON_FILE s3://groorj-folding-at-home/stats/$$JSON_FILE
+fi
 
 # End;

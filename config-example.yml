@@ -12,7 +12,7 @@ aws_instance_type: "t2.micro"
 # Number of AWS EC2 instances to run
 aws_ec2_instance_count: 1
 # AWS Tag: ResourceCreatedBy
-aws_tag_fah: "Folding@Home"
+aws_tag_fah: "Folding@Home-AWSResourceCreator"
 # Folding@Home username
 fah_user: "GustavoAguiar"
 # Folding@Home password
