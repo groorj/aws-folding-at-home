@@ -41,6 +41,7 @@ cat > /etc/fahclient/config.xml <<EOF
   <passkey value='$var_fah_pass'/>
   <allow>127.0.0.1 $${LOCAL_IP_ADDRESS} $var_your_ip_address</allow>
   <web-allow>127.0.0.1 $${LOCAL_IP_ADDRESS} $var_your_ip_address</web-allow>
+  <http-addresses v='0:$var_fah_webadmin_port'/>
 </config>
 EOF
 
@@ -58,7 +59,7 @@ if [ "$$STATS_ENABLED" == "True" ]; then
   echo "  \"region\": \"$${AWS_INSTANCE_REGION}\"" >> /tmp/$$JSON_FILE
   echo "  \"az\": \"$${AWS_INSTANCE_AZ}\"" >> /tmp/$$JSON_FILE
   echo "  \"ami-id\": \"$${AWS_AMI_ID}\"" >> /tmp/$$JSON_FILE
-  echo "  \"web-admin-url\": \"http://$${PUBLIC_IP_ADDRESS}:7396/\"" >> /tmp/$$JSON_FILE
+  echo "  \"web-admin-url\": \"http://$${PUBLIC_IP_ADDRESS}:$var_fah_webadmin_port/\"" >> /tmp/$$JSON_FILE
   echo "  \"status\": \"started\"" >> /tmp/$$JSON_FILE
   echo "}" >> /tmp/$$JSON_FILE
   aws s3 cp /tmp/$$JSON_FILE s3://groorj-folding-at-home/stats/$$JSON_FILE
