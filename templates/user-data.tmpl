@@ -9,10 +9,10 @@ function generate_stats_file {
   echo "  \"instance-id\": \"$${AWS_INSTANCE_ID}\"," >> $$JSON_FILE
   echo "  \"local-ip\": \"$${LOCAL_IP_ADDRESS}\"," >> $$JSON_FILE
   echo "  \"public-ip\": \"$${PUBLIC_IP_ADDRESS}\"," >> $$JSON_FILE
-  echo "  \"region\": \"$${AWS_INSTANCE_REGION}\"" >> $$JSON_FILE
-  echo "  \"az\": \"$${AWS_INSTANCE_AZ}\"" >> $$JSON_FILE
-  echo "  \"ami-id\": \"$${AWS_AMI_ID}\"" >> $$JSON_FILE
-  echo "  \"web-admin-url\": \"http://$${PUBLIC_IP_ADDRESS}:$var_fah_webadmin_port/\"" >> $$JSON_FILE
+  echo "  \"region\": \"$${AWS_INSTANCE_REGION}\"," >> $$JSON_FILE
+  echo "  \"az\": \"$${AWS_INSTANCE_AZ}\"," >> $$JSON_FILE
+  echo "  \"ami-id\": \"$${AWS_AMI_ID}\"," >> $$JSON_FILE
+  echo "  \"web-admin-url\": \"http://$${PUBLIC_IP_ADDRESS}:$var_fah_webadmin_port/\"," >> $$JSON_FILE
   echo "  \"status\": \"$$EC2_STATUS\"" >> $$JSON_FILE
   echo "}" >> $$JSON_FILE
 }
