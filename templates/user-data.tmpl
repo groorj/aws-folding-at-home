@@ -4,6 +4,19 @@
 # https://stats.foldingathome.org/team/$var_fah_team_id
 # stats enabled: $var_enable_stats
 
+function generate_stats_file {
+  echo "{" > $$JSON_FILE
+  echo "  \"instance-id\": \"$${AWS_INSTANCE_ID}\"," >> $$JSON_FILE
+  echo "  \"local-ip\": \"$${LOCAL_IP_ADDRESS}\"," >> $$JSON_FILE
+  echo "  \"public-ip\": \"$${PUBLIC_IP_ADDRESS}\"," >> $$JSON_FILE
+  echo "  \"region\": \"$${AWS_INSTANCE_REGION}\"," >> $$JSON_FILE
+  echo "  \"az\": \"$${AWS_INSTANCE_AZ}\"," >> $$JSON_FILE
+  echo "  \"ami-id\": \"$${AWS_AMI_ID}\"," >> $$JSON_FILE
+  echo "  \"web-admin-url\": \"http://$${PUBLIC_IP_ADDRESS}:$var_fah_webadmin_port/\"," >> $$JSON_FILE
+  echo "  \"status\": \"$$EC2_STATUS\"" >> $$JSON_FILE
+  echo "}" >> $$JSON_FILE
+}
+
 # variables
 LOCAL_IP_ADDRESS=`curl http://169.254.169.254/latest/meta-data/local-ipv4`
 PUBLIC_IP_ADDRESS=`curl http://169.254.169.254/latest/meta-data/public-ipv4`
@@ -51,18 +64,48 @@ EOF
 
 # stats
 if [ "$$STATS_ENABLED" == "True" ]; then
-  JSON_FILE="$${AWS_INSTANCE_ID}.json"
-  echo "{" > /tmp/$$JSON_FILE
-  echo "  \"instance-id\": \"$${AWS_INSTANCE_ID}\"," >> /tmp/$$JSON_FILE
-  echo "  \"local-ip\": \"$${LOCAL_IP_ADDRESS}\"," >> /tmp/$$JSON_FILE
-  echo "  \"public-ip\": \"$${PUBLIC_IP_ADDRESS}\"," >> /tmp/$$JSON_FILE
-  echo "  \"region\": \"$${AWS_INSTANCE_REGION}\"" >> /tmp/$$JSON_FILE
-  echo "  \"az\": \"$${AWS_INSTANCE_AZ}\"" >> /tmp/$$JSON_FILE
-  echo "  \"ami-id\": \"$${AWS_AMI_ID}\"" >> /tmp/$$JSON_FILE
-  echo "  \"web-admin-url\": \"http://$${PUBLIC_IP_ADDRESS}:$var_fah_webadmin_port/\"" >> /tmp/$$JSON_FILE
-  echo "  \"status\": \"started\"" >> /tmp/$$JSON_FILE
-  echo "}" >> /tmp/$$JSON_FILE
-  aws s3 cp /tmp/$$JSON_FILE s3://groorj-folding-at-home/stats/$$JSON_FILE
+  # generate status-started file
+  EC2_STATUS="started"
+  JSON_FILENAME="$${AWS_INSTANCE_ID}.json"
+  JSON_FILE="/tmp/$${JSON_FILENAME}"
+  generate_stats_file
+  # copy status-started file to s3
+  aws s3 cp $$JSON_FILE s3://$var_aws_s3_bucket_name/stats/$${JSON_FILENAME}
+  # generate status-terminated file
+  EC2_STATUS="terminated"
+  JSON_FILE="/etc/$${JSON_FILENAME}"
+  generate_stats_file
+  # create on-termination file
+  TERMINATION_FILE="/etc/ec2-termination.sh"
+  #cat > $${TERMINATION_FILE} <<EOF
+  echo '#!/bin/bash
+/usr/bin/echo "ec2-termination: start" > /tmp/aaa.txt
+/usr/bin/logger "ec2-termination: start"' > $${TERMINATION_FILE}
+echo "THE_RESULT=\`/usr/bin/aws s3 cp $${JSON_FILE} s3://$var_aws_s3_bucket_name/stats/$${EC2_STATUS}-$${JSON_FILENAME}\`" >> $${TERMINATION_FILE}
+echo '/usr/bin/echo "ec2-termination RESULT: $${THE_RESULT}" >> /tmp/aaa.txt
+/usr/bin/logger "ec2-termination RESULT: $${THE_RESULT}"
+/usr/bin/echo "ec2-termination: end" >> /tmp/aaa.txt
+/usr/bin/logger "ec2-termination: end"' >> $${TERMINATION_FILE}
+# EOF
+  chmod 700 $${TERMINATION_FILE}
+  cat > /usr/lib/systemd/system/ec2-termination.service <<EOF
+[Unit]
+Description=Execute as EC2 is being terminated.
+After=network-online.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=true
+ExecStop=/bin/bash /etc/ec2-termination.sh
+TimeoutSec=0
+KillMode=none
+
+[Install]
+WantedBy=multi-user.target
+EOF
+  ln -s /usr/lib/systemd/system/ec2-termination.service /etc/systemd/system/ec2-termination.service
+  systemctl start ec2-termination
+  systemctl daemon-reload
 fi
 
 # End;
