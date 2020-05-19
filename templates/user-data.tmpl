@@ -7,6 +7,7 @@
 function generate_stats_file {
   echo "{" > $$JSON_FILE
   echo "  \"instance-id\": \"$${AWS_INSTANCE_ID}\"," >> $$JSON_FILE
+  echo "  \"instance-timestamp\": \"$${INSTANCE_TIMESTAMP}\"," >> $$JSON_FILE
   echo "  \"local-ip\": \"$${LOCAL_IP_ADDRESS}\"," >> $$JSON_FILE
   echo "  \"public-ip\": \"$${PUBLIC_IP_ADDRESS}\"," >> $$JSON_FILE
   echo "  \"region\": \"$${AWS_INSTANCE_REGION}\"," >> $$JSON_FILE
@@ -17,7 +18,7 @@ function generate_stats_file {
   echo "}" >> $$JSON_FILE
 }
 
-# variables
+# create variables
 LOCAL_IP_ADDRESS=`curl http://169.254.169.254/latest/meta-data/local-ipv4`
 PUBLIC_IP_ADDRESS=`curl http://169.254.169.254/latest/meta-data/public-ipv4`
 AWS_INSTANCE_ID=`curl http://169.254.169.254/latest/meta-data/instance-id`
@@ -26,22 +27,22 @@ AWS_INSTANCE_REGION="`echo \"$${AWS_INSTANCE_AZ}\" | sed 's/[a-z]$$//'`"
 AWS_AMI_ID=`curl -s http://169.254.169.254/latest/meta-data/ami-id`
 STATS_ENABLED=$var_enable_stats
 
-# update
+# update OS before anything
 yum update -y
 
-# download 
+# download folding@home
 wget "https://download.foldingathome.org/releases/public/release/fahcontrol/centos-6.7-64bit/v7.5/fahcontrol-7.5.1-1.noarch.rpm"
 wget "https://download.foldingathome.org/releases/public/release/fahclient/centos-6.7-64bit/v7.5/fahclient-7.5.1-1.x86_64.rpm"
 
-# install
+# install folding@home
 yum install htop -y
 rpm -i --nodeps fahcontrol-7.5.1-1.noarch.rpm
 rpm -i --nodeps fahclient-7.5.1-1.x86_64.rpm
 
-# stop it
+# stop folding@home
 /etc/init.d/FAHClient stop
 
-# config
+# config folding@home
 cp -pd /etc/fahclient/config.xml /etc/fahclient/config.xml.orig
 cat > /etc/fahclient/config.xml <<EOF
 <config>
@@ -58,36 +59,48 @@ cat > /etc/fahclient/config.xml <<EOF
 </config>
 EOF
 
-# start
+# start folding@home
 /etc/init.d/FAHClient stop
 /etc/init.d/FAHClient start
 
-# stats
+# if stats is enabled, do this
 if [ "$$STATS_ENABLED" == "True" ]; then
   # generate status-started file
   EC2_STATUS="started"
-  JSON_FILENAME="$${AWS_INSTANCE_ID}.json"
+  # FILE_UNIQUE_ID=`date +%s`
+  FILE_UNIQUE_ID=$${RANDOM}
+  JSON_FILENAME="$${AWS_INSTANCE_ID}_$${EC2_STATUS}_$${FILE_UNIQUE_ID}.json"
   JSON_FILE="/tmp/$${JSON_FILENAME}"
+  INSTANCE_TIMESTAMP=`date "+%Y-%m-%d %H:%M:%S %z"`
   generate_stats_file
+
   # copy status-started file to s3
-  aws s3 cp $$JSON_FILE s3://$var_aws_s3_bucket_name/stats/$${JSON_FILENAME}
+  aws s3 cp $$JSON_FILE s3://$var_aws_s3_bucket_name/stats/$${AWS_INSTANCE_ID}/$${JSON_FILENAME}
+
   # generate status-terminated file
-  EC2_STATUS="terminated"
+  EC2_STATUS="stopped-terminated"
+  # FILE_UNIQUE_ID=`date +%s`
+  FILE_UNIQUE_ID=$${RANDOM}
+  JSON_FILENAME="$${AWS_INSTANCE_ID}_$${EC2_STATUS}_$${FILE_UNIQUE_ID}.json"
   JSON_FILE="/etc/$${JSON_FILENAME}"
+  INSTANCE_TIMESTAMP="%%%INSTANCE_TIMESTAMP%%%"
   generate_stats_file
+
   # create on-termination file
   TERMINATION_FILE="/etc/ec2-termination.sh"
-  #cat > $${TERMINATION_FILE} <<EOF
+
+  # generate ec2-termination file to be used by systemd
   echo '#!/bin/bash
-/usr/bin/echo "ec2-termination: start" > /tmp/aaa.txt
-/usr/bin/logger "ec2-termination: start"' > $${TERMINATION_FILE}
-echo "THE_RESULT=\`/usr/bin/aws s3 cp $${JSON_FILE} s3://$var_aws_s3_bucket_name/stats/$${EC2_STATUS}-$${JSON_FILENAME}\`" >> $${TERMINATION_FILE}
-echo '/usr/bin/echo "ec2-termination RESULT: $${THE_RESULT}" >> /tmp/aaa.txt
+/usr/bin/logger "ec2-termination: start"
+INSTANCE_TIMESTAMP=`date "+%Y-%m-%d %H:%M:%S %z"`' > $${TERMINATION_FILE}
+echo "sed -i \"s/%%%INSTANCE_TIMESTAMP%%%/\$${INSTANCE_TIMESTAMP}/g\" $${JSON_FILE}" >> $${TERMINATION_FILE}
+echo "THE_RESULT=\`/usr/bin/aws s3 cp $${JSON_FILE} s3://$var_aws_s3_bucket_name/stats/$${AWS_INSTANCE_ID}/$${JSON_FILENAME}\`" >> $${TERMINATION_FILE}
+echo '/usr/bin/logger "ec2-termination INSTANCE_TIMESTAMP: $${INSTANCE_TIMESTAMP}"
 /usr/bin/logger "ec2-termination RESULT: $${THE_RESULT}"
-/usr/bin/echo "ec2-termination: end" >> /tmp/aaa.txt
 /usr/bin/logger "ec2-termination: end"' >> $${TERMINATION_FILE}
-# EOF
   chmod 700 $${TERMINATION_FILE}
+
+  # generate systemd file
   cat > /usr/lib/systemd/system/ec2-termination.service <<EOF
 [Unit]
 Description=Execute as EC2 is being terminated.
@@ -103,6 +116,8 @@ KillMode=none
 [Install]
 WantedBy=multi-user.target
 EOF
+
+  # load systemd
   ln -s /usr/lib/systemd/system/ec2-termination.service /etc/systemd/system/ec2-termination.service
   systemctl start ec2-termination
   systemctl daemon-reload
