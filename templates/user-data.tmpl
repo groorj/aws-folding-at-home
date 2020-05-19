@@ -77,8 +77,8 @@ if [ "$$STATS_ENABLED" == "True" ]; then
   # copy status-started file to s3
   aws s3 cp $$JSON_FILE s3://$var_aws_s3_bucket_name/stats/$${AWS_INSTANCE_ID}/$${JSON_FILENAME}
 
-  # generate status-terminated file
-  EC2_STATUS="stopped-terminated"
+  # generate status-stoppped file
+  EC2_STATUS="stopped"
   # FILE_UNIQUE_ID=`date +%s`
   FILE_UNIQUE_ID=$${RANDOM}
   JSON_FILENAME="$${AWS_INSTANCE_ID}_$${EC2_STATUS}_$${FILE_UNIQUE_ID}.json"
