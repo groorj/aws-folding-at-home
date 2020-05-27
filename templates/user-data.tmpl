@@ -5,17 +5,17 @@
 # stats enabled: $var_enable_stats
 
 function generate_stats_file {
-  echo "{" > $$JSON_FILE
-  echo "  \"instance-id\": \"$${AWS_INSTANCE_ID}\"," >> $$JSON_FILE
-  echo "  \"instance-timestamp\": \"$${INSTANCE_TIMESTAMP}\"," >> $$JSON_FILE
-  echo "  \"local-ip\": \"$${LOCAL_IP_ADDRESS}\"," >> $$JSON_FILE
-  echo "  \"public-ip\": \"$${PUBLIC_IP_ADDRESS}\"," >> $$JSON_FILE
-  echo "  \"region\": \"$${AWS_INSTANCE_REGION}\"," >> $$JSON_FILE
-  echo "  \"az\": \"$${AWS_INSTANCE_AZ}\"," >> $$JSON_FILE
-  echo "  \"ami-id\": \"$${AWS_AMI_ID}\"," >> $$JSON_FILE
-  echo "  \"web-admin-url\": \"http://$${PUBLIC_IP_ADDRESS}:$var_fah_webadmin_port/\"," >> $$JSON_FILE
-  echo "  \"status\": \"$$EC2_STATUS\"" >> $$JSON_FILE
-  echo "}" >> $$JSON_FILE
+  printf "{" > $$JSON_FILE
+  printf " \"instance-id\": \"$${AWS_INSTANCE_ID}\"," >> $$JSON_FILE
+  printf " \"instance-timestamp\": \"$${INSTANCE_TIMESTAMP}\"," >> $$JSON_FILE
+  printf " \"local-ip\": \"$${LOCAL_IP_ADDRESS}\"," >> $$JSON_FILE
+  printf " \"public-ip\": \"$${PUBLIC_IP_ADDRESS}\"," >> $$JSON_FILE
+  printf " \"region\": \"$${AWS_INSTANCE_REGION}\"," >> $$JSON_FILE
+  printf " \"az\": \"$${AWS_INSTANCE_AZ}\"," >> $$JSON_FILE
+  printf " \"ami-id\": \"$${AWS_AMI_ID}\"," >> $$JSON_FILE
+  printf " \"web-admin-url\": \"http://$${PUBLIC_IP_ADDRESS}:$var_fah_webadmin_port/\"," >> $$JSON_FILE
+  printf " \"status\": \"$$EC2_STATUS\"" >> $$JSON_FILE
+  printf " }" >> $$JSON_FILE
 }
 
 # create variables
