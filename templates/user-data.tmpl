@@ -81,7 +81,7 @@ if [ "$$STATS_ENABLED" == "True" ]; then
   FILE_UNIQUE_ID=$${RANDOM}
   JSON_FILENAME="$${AWS_INSTANCE_ID}_$${EC2_STATUS}_$${FILE_UNIQUE_ID}.json"
   JSON_FILE="/etc/$${JSON_FILENAME}"
-  INSTANCE_TIMESTAMP="%%%INSTANCE_TIMESTAMP%%%"
+  INSTANCE_TIMESTAMP="%%%%%%INSTANCE_TIMESTAMP%%%%%%" # %%% escaped due to printf
   generate_stats_file
 
   # create on-termination file
