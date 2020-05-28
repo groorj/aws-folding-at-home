@@ -3,7 +3,7 @@ resource "aws_glue_catalog_database" "fah_athena_db" {
 }
 
 resource "aws_glue_catalog_table" "fah_athena_db_table" {
-  name          = "fahtable"
+  name          = "fah_instances"
   database_name = aws_glue_catalog_database.fah_athena_db.name
   description   = "Table that contains FAH data stored in S3."
 
@@ -28,19 +28,19 @@ resource "aws_glue_catalog_table" "fah_athena_db_table" {
     }
 
     columns {
-      name = "instance-id"
+      name = "instance_id"
       type = "string"
     }
     columns {
-      name = "instance-timestamp"
+      name = "instance_timestamp"
       type = "timestamp"
     }
     columns {
-      name = "local-ip"
+      name = "local_ip"
       type = "string"
     }
     columns { 
-      name = "public-ip" 
+      name = "public_ip" 
       type = "string" 
     } 
     columns {
@@ -52,11 +52,11 @@ resource "aws_glue_catalog_table" "fah_athena_db_table" {
       type = "string"
     }
     columns {
-      name = "ami-id"
+      name = "ami_id"
       type = "string"
     }
     columns {
-      name = "web-admin-url"
+      name = "web_admin_url"
       type = "string"
     }
     columns {
@@ -81,7 +81,7 @@ resource "aws_athena_workgroup" "fah_workgroup" {
 }
 
 resource "aws_athena_named_query" "fah_named_query_select_all" {
-  name      = "select-all"
+  name      = "select_all"
   workgroup = aws_athena_workgroup.fah_workgroup.id
   database  = aws_glue_catalog_database.fah_athena_db.name
   query     = "SELECT * FROM $${aws_glue_catalog_table.fah_athena_db_table.name};"
