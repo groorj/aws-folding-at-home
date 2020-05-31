@@ -83,5 +83,6 @@ if __name__ == "__main__":
     _generate_file('templates/terraform/provider.tf.tmpl', 'terraform/provider.tf')
     _generate_file('templates/terraform/network.tf.tmpl', 'terraform/network.tf')
     _generate_file('templates/terraform/compute.tf.tmpl', 'terraform/compute.tf')
+    _generate_file('templates/terraform/athena.tf.tmpl', 'terraform/athena.tf')
 
 # End;

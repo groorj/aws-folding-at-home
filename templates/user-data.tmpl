@@ -67,11 +67,10 @@ EOF
 if [ "$$STATS_ENABLED" == "True" ]; then
   # generate status-started file
   EC2_STATUS="started"
-  # FILE_UNIQUE_ID=`date +%s`
   FILE_UNIQUE_ID=$${RANDOM}
   JSON_FILENAME="$${AWS_INSTANCE_ID}_$${EC2_STATUS}_$${FILE_UNIQUE_ID}.json"
   JSON_FILE="/tmp/$${JSON_FILENAME}"
-  INSTANCE_TIMESTAMP=`date "+%Y-%m-%d %H:%M:%S %z"`
+  INSTANCE_TIMESTAMP=`date "+%Y-%m-%d %H:%M:%S"`
   generate_stats_file
 
   # copy status-started file to s3
@@ -79,11 +78,10 @@ if [ "$$STATS_ENABLED" == "True" ]; then
 
   # generate status-stoppped file
   EC2_STATUS="stopped"
-  # FILE_UNIQUE_ID=`date +%s`
   FILE_UNIQUE_ID=$${RANDOM}
   JSON_FILENAME="$${AWS_INSTANCE_ID}_$${EC2_STATUS}_$${FILE_UNIQUE_ID}.json"
   JSON_FILE="/etc/$${JSON_FILENAME}"
-  INSTANCE_TIMESTAMP="%%%INSTANCE_TIMESTAMP%%%"
+  INSTANCE_TIMESTAMP="%%%%%%INSTANCE_TIMESTAMP%%%%%%" # %%% escaped due to printf
   generate_stats_file
 
   # create on-termination file
@@ -92,7 +90,7 @@ if [ "$$STATS_ENABLED" == "True" ]; then
   # generate ec2-termination file to be used by systemd
   echo '#!/bin/bash
 /usr/bin/logger "ec2-termination: start"
-INSTANCE_TIMESTAMP=`date "+%Y-%m-%d %H:%M:%S %z"`' > $${TERMINATION_FILE}
+INSTANCE_TIMESTAMP=`date "+%Y-%m-%d %H:%M:%S"`' > $${TERMINATION_FILE}
 echo "sed -i \"s/%%%INSTANCE_TIMESTAMP%%%/\$${INSTANCE_TIMESTAMP}/g\" $${JSON_FILE}" >> $${TERMINATION_FILE}
 echo "THE_RESULT=\`/usr/bin/aws s3 cp $${JSON_FILE} s3://$var_aws_s3_bucket_name/stats/$${AWS_INSTANCE_ID}/$${JSON_FILENAME}\`" >> $${TERMINATION_FILE}
 echo '/usr/bin/logger "ec2-termination INSTANCE_TIMESTAMP: $${INSTANCE_TIMESTAMP}"
