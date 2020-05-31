@@ -28,7 +28,7 @@ resource "aws_glue_catalog_table" "fah_athena_db_table" {
     }
 
     columns {
-      name = "instance_id"
+      name = "instance-id"
       type = "string"
     }
     columns {
@@ -36,11 +36,11 @@ resource "aws_glue_catalog_table" "fah_athena_db_table" {
       type = "timestamp"
     }
     columns {
-      name = "local_ip"
+      name = "local-ip"
       type = "string"
     }
     columns { 
-      name = "public_ip" 
+      name = "public-ip" 
       type = "string" 
     } 
     columns {
@@ -52,11 +52,11 @@ resource "aws_glue_catalog_table" "fah_athena_db_table" {
       type = "string"
     }
     columns {
-      name = "ami_id"
+      name = "ami-id"
       type = "string"
     }
     columns {
-      name = "web_admin_url"
+      name = "web-admin-url"
       type = "string"
     }
     columns {
@@ -91,5 +91,5 @@ resource "aws_athena_named_query" "fah_named_query_select_webadminurl" {
   name      = "select_web_admin_url"
   workgroup = aws_athena_workgroup.fah_workgroup.id
   database  = aws_glue_catalog_database.fah_athena_db.name
-  query     = "SELECT instance_id, web_admin_url FROM $${aws_glue_catalog_table.fah_athena_db_table.name} GROUP BY instance_id, web_admin_url HAVING COUNT(instance_id) < 2;"
+  query     = "SELECT \"instance-id\", \"web-admin-url\" FROM $${aws_glue_catalog_table.fah_athena_db_table.name} GROUP BY \"instance-id\", \"web-admin-url\" HAVING COUNT(\"instance-id\") < 2;"
 }
