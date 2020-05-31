@@ -86,3 +86,10 @@ resource "aws_athena_named_query" "fah_named_query_select_all" {
   database  = aws_glue_catalog_database.fah_athena_db.name
   query     = "SELECT * FROM $${aws_glue_catalog_table.fah_athena_db_table.name};"
 }
+
+resource "aws_athena_named_query" "fah_named_query_select_webadminurl" {
+  name      = "select_web_admin_url"
+  workgroup = aws_athena_workgroup.fah_workgroup.id
+  database  = aws_glue_catalog_database.fah_athena_db.name
+  query     = "SELECT instance_id, web_admin_url FROM $${aws_glue_catalog_table.fah_athena_db_table.name} GROUP BY instance_id, web_admin_url HAVING COUNT(instance_id) < 2;"
+}
