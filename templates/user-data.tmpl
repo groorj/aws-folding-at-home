@@ -44,7 +44,7 @@ rpm -i --nodeps fahclient-7.5.1-1.x86_64.rpm
 
 # config folding@home
 cp -pd /etc/fahclient/config.xml /etc/fahclient/config.xml.orig
-cat > /etc/fahclient/config.xml <<EOF
+cat > /etc/fahclient/config.xml.new <<EOF
 <config>
   <fold-anon v='false'/>
   <gpu value='true'/>
@@ -58,9 +58,13 @@ cat > /etc/fahclient/config.xml <<EOF
   <http-addresses v='0:$var_fah_webadmin_port'/>
 </config>
 EOF
+chown fahclient:root /etc/fahclient/config.xml.new
+sleep 5
+cp -pd /etc/fahclient/config.xml.new /etc/fahclient/config.xml
 
 # start folding@home
 /etc/init.d/FAHClient stop
+sleep 5
 /etc/init.d/FAHClient start
 
 # if stats is enabled, do this
