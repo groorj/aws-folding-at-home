@@ -44,7 +44,7 @@ if __name__ == "__main__":
     aws_ec2_instance_count  = config["aws_ec2_instance_count"]
     enable_stats            = config["enable_stats"]
     
-    print("AWS Profile Name: ", aws_instance_type)
+    print("AWS Profile Name: ", aws_profile_name)
     print("AWS Region: ", aws_region)
     print("AWS EC2 Type: ", aws_instance_type)
     print("AWS S3 Bucker Name: ", aws_s3_bucket_name)
