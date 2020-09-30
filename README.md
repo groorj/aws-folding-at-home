@@ -1,11 +1,11 @@
-# aws-foldathome
+# aws-folding-at-home
 
 ## Table of Contents
-- [What does it do ?](https://github.com/groorj/aws-foldathome#what-does-it-do)
-- [This project uses](https://github.com/groorj/aws-foldathome#this-project-uses)
-- [Get started](https://github.com/groorj/aws-foldathome#get-started)
-- [Clean up](https://github.com/groorj/aws-foldathome#clean-up)
-- [Notes](https://github.com/groorj/aws-foldathome#notes)
+- [What does it do ?](https://github.com/groorj/aws-folding-at-home#what-does-it-do)
+- [This project uses](https://github.com/groorj/aws-folding-at-home#this-project-uses)
+- [Get started](https://github.com/groorj/aws-folding-at-home#get-started)
+- [Clean up](https://github.com/groorj/aws-folding-at-home#clean-up)
+- [Notes](https://github.com/groorj/aws-folding-at-home#notes)
 
 ## What does it do
 
@@ -115,7 +115,7 @@ If you set `enable_stats` to `true` you can now access the Folding@Home EC2 inst
 
 Here is what the stats page looks like:
 
-[stats page]: https://github.com/groorj/aws-foldingathome/folding@home-stats.png "Folding@Home stats page"
+[stats page]: https://github.com/groorj/aws-folding-at-home/folding@home-stats.png "Folding@Home stats page"
 
 
 ### SSH into your instance(s)
