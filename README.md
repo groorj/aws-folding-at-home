@@ -115,7 +115,7 @@ If you set `enable_stats` to `true` you can now access the Folding@Home EC2 inst
 
 Here is what the stats page looks like:
 
-[stats page]: https://github.com/groorj/aws-folding-at-home/folding@home-stats.png "Folding@Home stats page"
+![stats page](images/folding@home-stats.png) "Folding@Home stats page"
 
 
 ### SSH into your instance(s)
