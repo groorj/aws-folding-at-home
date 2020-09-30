@@ -30,14 +30,31 @@ STATS_ENABLED=$var_enable_stats
 # update OS before anything
 yum update -y
 
+# install apps
+yum install htop -y
+
 # download folding@home
-wget "https://download.foldingathome.org/releases/public/release/fahcontrol/centos-6.7-64bit/v7.5/fahcontrol-7.5.1-1.noarch.rpm"
-wget "https://download.foldingathome.org/releases/public/release/fahclient/centos-6.7-64bit/v7.5/fahclient-7.5.1-1.x86_64.rpm"
+cd /root
+wget "https://download.foldingathome.org/releases/public/release/fahcontrol/centos-6.7-64bit/v7.6/fahcontrol-7.6.13-1.noarch.rpm"
+wget "https://download.foldingathome.org/releases/public/release/fahclient/centos-6.7-64bit/v7.6/fahclient-7.6.13-1.x86_64.rpm"
 
 # install folding@home
-yum install htop -y
-rpm -i --nodeps fahcontrol-7.5.1-1.noarch.rpm
-rpm -i --nodeps fahclient-7.5.1-1.x86_64.rpm
+rpm -i --nodeps fahcontrol-7.6.13-1.noarch.rpm
+rpm -i --nodeps fahclient-7.6.13-1.x86_64.rpm
+
+# setup NVIDIA drivers
+lspci > /root/lspci.txt
+wget http://us.download.nvidia.com/XFree86/Linux-x86_64/430.40/NVIDIA-Linux-x86_64-430.40.run
+yum group install "Development Tools" -y
+yum install kernel-devel -y
+amazon-linux-extras install epel -y
+yum -y install dkms -y
+cp -pd /etc/default/grub /root/grub.orig
+echo "modprobe.blacklist=nouveau" >> /etc/default/grub
+grub2-mkconfig -o /boot/grub2/grub.cfg
+grub2-mkconfig -o /boot/efi/EFI/redhat/grub.cfg
+systemctl isolate multi-user.target
+bash /root/NVIDIA-Linux-x86_64-430.40.run -s
 
 # stop folding@home
 /etc/init.d/FAHClient stop
@@ -124,5 +141,8 @@ EOF
   systemctl start ec2-termination
   systemctl daemon-reload
 fi
+
+# reboot due to drivers installation
+# reboot
 
 # End;
