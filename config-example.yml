@@ -1,27 +1,27 @@
 # your AWS profile name
-aws_profile_name: "groorj-folding-at-home"
+aws_profile_name: "my-profile-name"
 # AWS S3 bucket name that will store the Terraform state file
-aws_s3_bucket_name: "folding-at-home-test"
-aws_s3_bucket_region: "us-east-2"
+aws_s3_bucket_name: "your-bucket-name"
+aws_s3_bucket_region: "us-east-1"
 # AWS region and availability zones to use
-aws_region: "us-east-2"
+aws_region: "us-east-1"
 aws_availability_zone_1: "a"
 aws_availability_zone_2: "b"
 # AWS EC2 instance type to use
-aws_instance_type: "t2.micro"
+aws_instance_type: "select-your-instance-size" # p3.2xlarge has a NVIDIA Tesla V100
 # Number of AWS EC2 instances to run
 aws_ec2_instance_count: 1
 # AWS Tag: ResourceCreatedBy
 aws_tag_fah: "Folding@Home-AWSResourceCreator"
 # Folding@Home username
-fah_user: "GustavoAguiar"
+fah_user: "GustavoAguiar" # change to your Folding@Home username
 # Folding@Home password
-fah_pass: "FoldingPassword"
+fah_pass: "my-super-complex-password" # change to your Folding@Home password
 # Folding@Home Team Id
-fah_team_id: 238681
+fah_team_id: 238681 # change to your Folding@Home team
 # Folding@Home WebAdmin Port (default: 7396 -- change it at your own risk)
 fah_webadmin_port: 7396
 # Your IP address to whitelist Folding@Home web admin interface
-your_ip_address: "A.B.C.D"
+your_ip_address: "A.B.C.D" # change to your public IP address
 # Enable stats -- save stats data to S3 bucket to be used by Athena
-enable_stats: true
+enable_stats: true # set to true or false
