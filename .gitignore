@@ -1,3 +1,7 @@
 IGNORE.md
 .terraform/
+terraform/*.txt
 my-config.yml
+source.sh
+clean.sh
+*.ignore
