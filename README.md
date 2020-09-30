@@ -20,6 +20,8 @@ At the end of the creation, you will have a VPC with subnets and EC2 instance(s)
 
 Here is the *AWS architecture* of this project:
 
+![AWS diagram](images/folding@home-aws-diagram.png)
+
 ## This project uses
 
 - AWS VPC, IGW, EC2, Athena
